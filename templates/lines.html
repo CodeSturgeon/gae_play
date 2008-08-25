@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//Dspan XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/Dspan/xhtml1-transitional.dspan">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Untitled Document</title>
+<style type="text/css">
+<!--
+.Label_Span {
+        /*border: 1px solid black;*/
+	text-align: right;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+.Box_Span {
+	height: 20px;
+	width: 20px;
+	border: 1px solid black;
+	padding-left: 4px;
+	padding-right: 4px;
+        margin: 1px;
+        text-align: center;
+}
+.Edit_Span {
+	vertical-align: top;
+	font-size: x-small;
+}
+.Box_Container {
+	float: right;
+	vertical-align: top;
+}
+.Label_Container {
+	float: left;
+	text-align: right;
+}
+.Line_Container {
+	clear: both;
+	padding: 5px;
+<!--         background-color: lightgrey; -->
+	/*border: 1px solid blue;*/
+}
+-->
+</style>
+</head>
+<body>
+{% for row in template_rows %}
+<div class="Line_Container">
+    <div class="Label_Container">
+        <span class="Label_Span">{{ row.name }}</span><br/>
+        <span class="Edit_Span" 
+            onclick="window.location='/edit?key={{row.key}}'">[Edit]</span>
+    </div>
+    <div class="Box_Container">
+    {% for seg_data in row.segments %}
+        <span class="Box_Span" onclick="window.location='{{seg_data.href}}'">
+            {{seg_data.value}}
+        </span>
+    {% endfor %}
+    </div>
+</div>
+{% endfor %}
+<p>
+<br/>
+<br/>
+<br/>
+<br/>
+    <pre>{{ text }}</pre>
+</p>
+</body>
+</html>
+

@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+<p>&nbsp;</p>
+<table border="1">
+  <tr>
+    <th scope="col"></th>
+{% for segment in segments %}
+    <th scope="col" title='{{ segment.title }}'>{{segment.name}}</th>
+{% endfor %}
+  </tr>
+  <tr>
+{% for row in template_rows %}
+    <th scope="row">{{ row.name }}</th>
+	{% for seg_data in row.segments %}
+<!--    <td><a href='{{seg_data.href}}'>{{seg_data.value}}</a></td> -->
+    <td onClick='window.location="{{seg_data.href}}"'>{{seg_data.value}}</td>
+	{% endfor %}
+  </tr>
+{% endfor %}
+</table>
+<pre>{{ text }}
+</pre>
+</body>
+</html>

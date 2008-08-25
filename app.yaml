@@ -1,0 +1,14 @@
+application: codesturgeon
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /static
+  static_dir: static
+- url: /test.*
+  script: test.py
+- url: /b.*
+  script: bop.py
+- url: /.*
+  script: rows.py
