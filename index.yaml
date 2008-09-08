@@ -10,6 +10,25 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+# Used 3 times in query history.
+- kind: Event
+  properties:
+  - name: name
+  - name: event_time
+
+# Used 83 times in query history.
+- kind: Event
+  properties:
+  - name: type
+  - name: event_time
+
+# Used 28 times in query history.
+- kind: Event
+  properties:
+  - name: type
+  - name: event_time
+    direction: desc
+
 # Unused in query history -- copied from input.
 - kind: Marker
   properties:
