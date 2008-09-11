@@ -33,8 +33,9 @@ class Event(db.Expando):
 class IndexPage(webapp.RequestHandler):
     def get(self):
         log.error('pop')
-        self.response.out.write(template.render('templates/pre.html', {
-            'text': 'index'}))
+        self.redirect('/mini')
+#        self.response.out.write(template.render('templates/pre.html', {
+#            'text': 'index'}))
 
 class Hello(webapp.RequestHandler):
     def get(self):
