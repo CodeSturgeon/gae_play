@@ -5,16 +5,38 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 
 <head>
 <title>Form of titleness</title>
+<style>
+    table {
+        border-color: black;
+        border-style: solid;
+        border-width: 2px;
+        border-collapse: collapse;
+    }
+    td {
+        border-color: grey;
+        border-collapse: collapse;
+        border-style: solid;
+        border-width: 1px;
+        padding: 3px;
+    }
+</style>
 </head>
 
 <body>
 <form method='post' action='/events'>
+
 <select name='type'>
 {% for type_name in type_list %}
 <option>{{type_name}}</option>
 {% endfor %}
 </select>
+
+<select name='event_time'>
+{{options}}
+</select>
+
 <button type='submit'>MAKE</button>
+
 </form>
 <table>
 {% for type in times %}

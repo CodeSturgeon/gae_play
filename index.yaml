@@ -22,7 +22,7 @@ indexes:
   - name: type
   - name: event_time
 
-# Used 28 times in query history.
+# Used 126 times in query history.
 - kind: Event
   properties:
   - name: type
