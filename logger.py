@@ -120,7 +120,7 @@ class FormDisplay(webapp.RequestHandler):
         else:
             adj_now = now - timedelta(minutes=adj_min)
 
-        dt_lst1 = [adj_now+timedelta(minutes = x*10) for x in range(-16, -1)]
+        dt_lst1 = [adj_now+timedelta(minutes = x*10) for x in range(-16, 0)]
         dt_lst2 = [adj_now+timedelta(minutes=x*10) for x in range(1, 16)]
 
         options = '\n'.join([
