@@ -97,23 +97,35 @@ class TypeShower(webapp.RequestHandler):
 
 class FormDisplay(webapp.RequestHandler):
     def get(self):
-        times = []
+        now = datetime.utcnow().replace(tzinfo=pytz.utc,second=0,microsecond=0)
         eastern = pytz.timezone('US/Eastern')
+
+        # Compile times for types
+        times = []
         for type_name in type_list:
             type = db.GqlQuery('SELECT * FROM Type WHERE name = :name',
                 name = type_name).fetch(1)[0]
             try:
-                evt = db.GqlQuery('SELECT * FROM Event WHERE type = :type_key'
+                events = db.GqlQuery('SELECT * FROM Event WHERE type = :type_key'
                         ' ORDER BY event_time DESC',type_key = type.key()
-                    ).fetch(1)[0]
-                t = evt.event_time.replace(tzinfo=pytz.utc
+                    ).fetch(2)
+                t1 = events[0].event_time.replace(tzinfo=pytz.utc
                     ).astimezone(eastern).strftime('%I:%M %p [%a]')
                 #t += evt.event_time.tzinfo
             except IndexError:
-                t = 'None'
-            times.append({'name':type_name, 'time':t})
+                t1 = 'None'
 
-        now = datetime.utcnow().replace(tzinfo=pytz.utc,second=0,microsecond=0)
+            try:
+                t2 = events[1].event_time.replace(tzinfo=pytz.utc
+                    ).astimezone(eastern).strftime('%I:%M %p [%a]')
+                #t += evt.event_time.tzinfo
+            except IndexError:
+                t2 = 'None'
+
+            times.append({'name':type_name, 'time1':t1, 'time2':t2})
+
+
+        # Make time selector
         adj_min = now.minute % 10
         if adj_min >= 5:
             adj_now = now + timedelta(minutes=(10-adj_min))

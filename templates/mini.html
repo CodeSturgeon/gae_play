@@ -40,9 +40,12 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 
 </form>
 <table>
+<thead>
+<th>Type</th> <th>Last</th> <th>Previous</th>
+</thead>
 {% for type in times %}
 <tr>
-<td>{{type.name}}</td> <td>{{type.time}}</td>
+<td>{{type.name}}</td> <td>{{type.time1}}</td> <td>{{type.time2}}</td>
 </tr>
 {% endfor %}
 </table>
