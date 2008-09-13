@@ -11,6 +11,8 @@ from formencode import htmlfill
 from google.appengine.api import users
 import cgi
 
+from jsonprop import JSONProperty
+
 type_list = [
     'feed','poop','bath','vitimins','meds','wardrobe','litter','daddychow'
 ]
@@ -20,6 +22,7 @@ log = logging.getLogger(__name__)
 
 class Type(db.Model):
     name = db.StringProperty()
+    fields = JSONProperty()
     def __repr__(self):
         return 'Type(%s)'%self.name
 
