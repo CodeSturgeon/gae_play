@@ -12,7 +12,7 @@ from google.appengine.api import users
 import cgi
 
 type_list = [
-    'feed','poop','bath','vitimins','meds','litter','daddychow'
+    'feed','poop','bath','vitimins','meds','wardrobe','litter','daddychow'
 ]
 
 log = logging.getLogger(__name__)
