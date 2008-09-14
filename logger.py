@@ -7,7 +7,7 @@ import pytz
 from models import Row, Marker
 import logging
 import formencode
-from formencode import htmlfill
+from formencode import htmlfill, validators
 from google.appengine.api import users
 import cgi
 
@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 
 class Type(db.Model):
     name = db.StringProperty()
-    fields = JSONProperty()
+    data_defs = JSONProperty()
     def __repr__(self):
         return 'Type(%s)'%self.name
 
@@ -47,14 +47,30 @@ class Hello(webapp.RequestHandler):
 
 class Init(webapp.RequestHandler):
     def get(self):
+        text = ''
         for type_name in type_list:
             q = Type.all().filter('name =', type_name)
             x = q.fetch(1)
             if len(x) == 0:
                 t = Type(name=type_name)
-                t.put()
+                text += 'make %s\n'%type_name
+            else:
+                t = x[0]
+                text += 'find %s\n'%type_name
+
+            if t.name in ['feed']:
+                t.data_defs = [{'name':'amount', 'validator':'Int'}]
+                text += 'def %s\n'%type_name
+            elif t.name in ['poop']:
+                t.data_defs = [{'name':'size', 'validator':'OneOf',
+                    'vinit_a':[['small', 'medium', 'large']],
+                    'vinit_d':{'not_empty':'1'},
+                    }]
+
+            t.put()
+
         self.response.out.write(template.render('templates/pre.html', {
-            'text': 'init'}))
+            'text': text}))
 
 class EventsHandler(webapp.RequestHandler):
     def get(self, format):
@@ -62,13 +78,33 @@ class EventsHandler(webapp.RequestHandler):
             'text': 'qwer'}))
     def post(self, format):
         type_name = self.request.get('type')
-        type = Type.all().filter('name =', type_name).fetch(1)[0]
-        create_time = datetime.now()
+        d = {}
+        t = Type.all().filter('name =', type_name).fetch(1)[0]
+        d['type'] = t
+        d['create_time'] = datetime.now()
         #event_time = self.request.get('event_time', create_time)
-        event_time = datetime.strptime(
+        d['event_time'] = datetime.strptime(
                 self.request.get('event_time'),'%Y-%m-%d %H:%M:%S+00:00'
             ).replace(tzinfo=pytz.utc)
-        new = Event(type=type, create_time=create_time, event_time=event_time)
+        data = self.request.get('data',None)
+        if data is not None:
+            validator_f = getattr(validators, t.data_defs[0]['validator'])
+            validator_a = t.data_defs[0].get('vinit_a', [])
+            # Convert unicode keys to plain strings
+            validator_d_uni = t.data_defs[0].get('vinit_d', {})
+            validator_d = {}
+            for (key, value) in validator_d_uni.iteritems():
+                validator_d[str(key)] = value
+            # Create validator
+            validator = validator_f(*validator_a, **validator_d)
+            try:
+                vdata = validator.to_python(data)
+                setattr(t, t.data_defs[0]['name'], vdata)
+            except formencode.Invalid, e:
+                self.response.out.write(template.render('templates/pre.html', {
+                    'text': e}))
+                return
+        new = Event(**d)
         key = new.put()
         #self.redirect('/events/%s'%key)
         self.redirect('/mini')
