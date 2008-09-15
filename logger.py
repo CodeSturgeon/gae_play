@@ -82,12 +82,12 @@ class EventsHandler(webapp.RequestHandler):
         t = Type.all().filter('name =', type_name).fetch(1)[0]
         d['type'] = t
         d['create_time'] = datetime.now()
-        #event_time = self.request.get('event_time', create_time)
         d['event_time'] = datetime.strptime(
                 self.request.get('event_time'),'%Y-%m-%d %H:%M:%S+00:00'
             ).replace(tzinfo=pytz.utc)
-        data = self.request.get('data',None)
-        if data is not None:
+        if type(t.data_defs) is list:
+            log.error('doing validation')
+            data = self.request.get('data',None)
             validator_f = getattr(validators, t.data_defs[0]['validator'])
             validator_a = t.data_defs[0].get('vinit_a', [])
             # Convert unicode keys to plain strings
@@ -99,7 +99,7 @@ class EventsHandler(webapp.RequestHandler):
             validator = validator_f(*validator_a, **validator_d)
             try:
                 vdata = validator.to_python(data)
-                setattr(t, t.data_defs[0]['name'], vdata)
+                d[str(t.data_defs[0]['name'])] = vdata
             except formencode.Invalid, e:
                 self.response.out.write(template.render('templates/pre.html', {
                     'text': e}))
