@@ -48,6 +48,7 @@ class Hello(webapp.RequestHandler):
 class Init(webapp.RequestHandler):
     def get(self):
         text = ''
+        types = {}
         for type_name in type_list:
             q = Type.all().filter('name =', type_name)
             x = q.fetch(1)
@@ -66,8 +67,18 @@ class Init(webapp.RequestHandler):
                     'vinit_a':[['small', 'medium', 'large']],
                     'vinit_d':{'not_empty':'1'},
                     }]
-
+            types[t.name] = t
             t.put()
+
+        log.error('%r %s'%(types['feed'], types['feed']))
+        for event in Event.all():
+            log.error('*%r %s'%(event.type,event.type))
+            if event.type.name == 'feed':
+                try:
+                    am = event.amount
+                except AttributeError:
+                    event.amount = 50
+                    event.put()
 
         self.response.out.write(template.render('templates/pre.html', {
             'text': text}))
