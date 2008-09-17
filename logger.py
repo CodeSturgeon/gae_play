@@ -60,24 +60,29 @@ class Init(webapp.RequestHandler):
                 text += 'find %s\n'%type_name
 
             if t.name in ['feed']:
-                t.data_defs = [{'name':'amount', 'validator':'Int'}]
+                t.data_defs = [{'name':'amount', 'validator':'Int',
+                    'vinit_d':{'not_empty':'1'},
+                    'migrate_default': 50,
+                    }]
                 text += 'def %s\n'%type_name
             elif t.name in ['poop']:
-                t.data_defs = [{'name':'size', 'validator':'OneOf',
-                    'vinit_a':[['small', 'medium', 'large']],
+                t.data_defs = [{'name':'size', 'validator':'DictConverter',
+                    'vinit_a':[{'smear':0, 'small':1, 'medium':2, 'large':3}],
                     'vinit_d':{'not_empty':'1'},
+                    'migrate_default': 2,
                     }]
             types[t.name] = t
             t.put()
 
-        log.error('%r %s'%(types['feed'], types['feed']))
         for event in Event.all():
-            log.error('*%r %s'%(event.type,event.type))
-            if event.type.name == 'feed':
+            if type(event.type.data_defs) is list:
+                def_name = event.type.data_defs[0]['name']
                 try:
-                    am = event.amount
+                    evt_test = getattr(event, def_name)
                 except AttributeError:
-                    event.amount = 50
+                    text += 'setting default on %s event\n'%event.type.name
+                    setattr(event, def_name,
+                        event.type.data_defs[0]['migrate_default'])
                     event.put()
 
         self.response.out.write(template.render('templates/pre.html', {
